@@ -3,20 +3,18 @@ import random
 import time
 from transformers import pipeline
 import requests
-API_URL = "https://api-inference.huggingface.co/models/textattack/distilbert-base-uncased-CoLA"
+API_URL = "https://api-inference.huggingface.co/models/youlun77/finetuning-sentiment-model-25000-samples-BERT"
 headers = {"Authorization": "Bearer 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"}
 
-def query1(payload):
+def query_distilbert(payload):
     start = time.time()
     response = requests.post(API_URL, headers=headers, json=payload)
     return response.json(), time.time()-start
 
-output = query1({
-	"inputs": "I like you. I love you",
-})
+
 
 def demo_func_distil_label(input):
-    output, duration = query1({
+    output, duration = query_distilbert({
 	    "inputs": str(input),
     })
     print(f'output = {output}')
@@ -25,19 +23,24 @@ def demo_func_distil_label(input):
          if item['score'] > score:
               result = item['label']
               score = item['score']
+
+    if result=='LABEL_0':
+        result='NEGATIVE'
+    else:
+        result='POSITIVE'
 
     return result, duration
     
 
 
-API_URL_BERT = "https://api-inference.huggingface.co/models/finiteautomata/bertweet-base-sentiment-analysis"
-def query2(payload):
+API_URL_BERT = "https://api-inference.huggingface.co/models/youlun77/finetuning-sentiment-model-25000-samples"
+def query_bert(payload):
     start = time.time()
     response = requests.post(API_URL_BERT, headers=headers, json=payload)
     return response.json(), time.time()-start
 	
 def demo_func_bert_label(input):
-    output, duration = query2({
+    output, duration = query_bert({
 	    "inputs": str(input),
     })
     print(f'output = {output}')
@@ -46,6 +49,11 @@ def demo_func_bert_label(input):
          if item['score'] > score:
               result = item['label']
               score = item['score']
+
+    if result=='LABEL_0':
+        result='NEGATIVE'
+    else:
+        result='POSITIVE'
 
     return result, duration
     
